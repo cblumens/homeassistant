@@ -1,0 +1,261 @@
+
+- alias: Laundry finished
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.wash_cycle
+    to: 'off'
+  action:
+  - service: notify.twitter
+    data:
+      message: "Laundry finished #homeassistant"
+  - service: script.turn_on
+    entity_id: script.flash_lights
+
+- alias: Washing machine standby
+  trigger:
+  - platform: time_pattern
+    minutes: 15
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.washingmachine_current_power_w
+    above: 1
+    below: 2
+  action:
+  - service: script.turn_on
+    entity_id: script.flash_lights
+
+- alias: Livingroom scene select
+  trigger:
+    - platform: state
+      entity_id: input_select.livingroom_scene
+  action:
+  - service: script.turn_on
+    data_template:
+      entity_id: >
+          {% if is_state("input_select.livingroom_scene", "Concentrate") %}
+            script.livingroom_concentrate
+          {%-elif is_state("input_select.livingroom_scene", "Read") %}
+            script.livingroom_reading
+          {%-elif is_state("input_select.livingroom_scene", "Relax") %}
+            script.livingroom_relax
+          {%-elif is_state("input_select.livingroom_scene", "Dimmed") %}
+            script.livingroom_dimmed
+          {%-elif is_state("input_select.livingroom_scene", "Nightlight") %}
+            script.livingroom_nightlight
+          {% else %}
+            none
+          {% endif %}
+
+- alias: Bedroom scene select
+  trigger:
+  - platform: state
+    entity_id: input_select.bedroom_scene
+  action:
+  - service: script.turn_on
+    data_template:
+      entity_id: >
+          {% if is_state("input_select.bedroom_scene", "Concentrate") %}
+            script.bedroom_concentrate
+          {%-elif is_state("input_select.bedroom_scene", "Read") %}
+            script.bedroom_reading
+          {%-elif is_state("input_select.bedroom_scene", "Relax") %}
+            script.bedroom_relax
+          {%-elif is_state("input_select.bedroom_scene", "Dimmed") %}
+            script.bedroom_dimmed
+          {%-elif is_state("input_select.bedroom_scene", "Nightlight") %}
+            script.bedroom_nightlight
+          {% else %}
+            none
+          {% endif %}
+          
+- alias: Kitchen scene select
+  trigger:
+  - platform: state
+    entity_id: input_select.kitchen_scene
+  action:
+  - service: script.turn_on
+    data_template:
+      entity_id: >
+          {% if is_state("input_select.kitchen_scene", "Concentrate") %}
+            script.kitchen_concentrate
+          {%-elif is_state("input_select.kitchen_scene", "Read") %}
+            script.kitchen_reading
+          {%-elif is_state("input_select.kitchen_scene", "Relax") %}
+            script.kitchen_relax
+          {%-elif is_state("input_select.kitchen_scene", "Dimmed") %}
+            script.kitchen_dimmed
+          {%-elif is_state("input_select.kitchen_scene", "Nightlight") %}
+            script.kitchen_nightlight
+          {% else %}
+            none
+          {% endif %}
+
+- alias: Bedroom scene reset
+  trigger:
+  - platform: state
+    entity_id: group.bedroom_lights
+    to: 'off'
+    for:
+      hours: 3
+  action:
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.bedroom_scene
+      option: 'Read'
+
+- alias: Kitchen scene reset
+  trigger:
+  - platform: state
+    entity_id: group.kitchen_lights
+    to: 'off'
+    for:
+      hours: 3
+  action:
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.kitchen_scene
+      option: 'Read'
+
+- alias: Livingroom scene reset
+  trigger:
+  - platform: state
+    entity_id: group.livingroom_lights
+    to: 'off'
+    for:
+      hours: 3
+  action:
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.livingroom_scene
+      option: 'Read'
+  
+- alias: Apply livingroom scene
+  trigger:
+  - platform: state
+    entity_id:
+    - light.hue_color_lamp_2
+    - light.hue_color_lamp_6
+    to: 'on'
+  action:
+  - service: script.turn_on
+    data_template:
+      entity_id: >
+          {% if is_state("input_select.livingroom_scene", "Concentrate") %}
+            script.livingroom_concentrate
+          {%-elif is_state("input_select.livingroom_scene", "Read") %}
+            script.livingroom_reading
+          {%-elif is_state("input_select.livingroom_scene", "Relax") %}
+            script.livingroom_relax
+          {%-elif is_state("input_select.livingroom_scene", "Dimmed") %}
+            script.livingroom_dimmed
+          {%-elif is_state("input_select.livingroom_scene", "Nightlight") %}
+            script.livingroom_nightlight
+          {% else %}
+            none
+          {% endif %}
+
+- alias: Apply bedroom scene
+  trigger:
+  - platform: state
+    entity_id:
+    - light.hue_color_lamp_4
+    - light.hue_color_lamp_7
+    - light.hue_color_lamp_3
+    to: 'on'
+  action:
+  - service: script.turn_on
+    data_template:
+      entity_id: >
+          {% if is_state("input_select.bedroom_scene", "Concentrate") %}
+            script.bedroom_concentrate
+          {%-elif is_state("input_select.bedroom_scene", "Read") %}
+            script.bedroom_reading
+          {%-elif is_state("input_select.bedroom_scene", "Relax") %}
+            script.bedroom_relax
+          {%-elif is_state("input_select.bedroom_scene", "Dimmed") %}
+            script.bedroom_dimmed
+          {%-elif is_state("input_select.bedroom_scene", "Nightlight") %}
+            script.bedroom_nightlight
+          {% else %}
+            none
+          {% endif %}
+
+- alias: Apply kitchen scene
+  trigger:
+  - platform: state
+    entity_id:
+    - light.hue_color_lamp_1
+    - light.hue_color_lamp_5
+    to: 'on'
+  action:
+  - service: script.turn_on
+    data_template:
+      entity_id: >
+          {% if is_state("input_select.kitchen_scene", "Concentrate") %}
+            script.kitchen_concentrate
+          {%-elif is_state("input_select.kitchen_scene", "Read") %}
+            script.kitchen_reading
+          {%-elif is_state("input_select.kitchen_scene", "Relax") %}
+            script.kitchen_relax
+          {%-elif is_state("input_select.kitchen_scene", "Dimmed") %}
+            script.kitchen_dimmed
+          {%-elif is_state("input_select.kitchen_scene", "Nightlight") %}
+            script.kitchen_nightlight
+          {% else %}
+            none
+          {% endif %}
+
+- alias: XBOX switched on
+  trigger:
+  - platform: state
+    entity_id: media_player.living_room_xbox
+    to: 'on' 
+  - platform: state
+    entity_id: media_player.living_room_xbox
+    to: 'paused' 
+  condition:
+  - condition: numeric_state
+    entity_id: sun.sun
+    value_template: "{{ state.attributes.elevation }}"
+    below: -1.5
+  action:
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.livingroom_scene
+      option: 'Nightlight'
+  - service: light.turn_on
+    entity_id: group.livingroom_lights
+
+- alias: XBOX switched off
+  trigger:
+  - platform: state
+    entity_id: media_player.living_room_xbox
+    to: 'off'
+  condition:
+    condition: and
+    conditions:
+    - condition: numeric_state
+      entity_id: sun.sun
+      value_template: "{{ state.attributes.elevation }}"
+      below: -1.5
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: trigger.from_state
+        state: 'unavailable'
+  action:
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.livingroom_scene
+      option: 'Relax'
+  - service: light.turn_on
+    entity_id: group.livingroom_lights
+
+- alias: XBOX playing
+  trigger:
+  - platform: state
+    entity_id: media_player.living_room_xbox
+    to: 'playing'
+  action:
+  - service: light.turn_off
+    entity_id: group.livingroom_lights
