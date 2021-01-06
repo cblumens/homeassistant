@@ -231,18 +231,20 @@
   - platform: state
     entity_id: media_player.living_room_xbox
     to: 'off'
+    from: 'on'
+  - platform: state
+    entity_id: media_player.living_room_xbox
+    to: 'off'
+    from: 'playing'
+  - platform: state
+    entity_id: media_player.living_room_xbox
+    to: 'off'
+    from: 'paused'
   condition:
-    condition: and
-    conditions:
-    - condition: numeric_state
-      entity_id: sun.sun
-      value_template: "{{ state.attributes.elevation }}"
-      below: -1.5
-    - condition: not
-      conditions:
-      - condition: state
-        entity_id: trigger.from_state
-        state: 'unavailable'
+  - condition: numeric_state
+    entity_id: sun.sun
+    value_template: "{{ state.attributes.elevation }}"
+    below: -1.5
   action:
   - service: input_select.select_option
     data:
